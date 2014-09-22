@@ -74,12 +74,61 @@ namespace TriviaGame
         }
 
         static void Greeting()
+
         {
             Console.Write("Please enter your name: ");
             string name = Console.ReadLine();
             Console.WriteLine("Hello, " + name + " you will answer questions until you get 10 wrong or hit Ctrl+C.");
         }
+
+        static void AddHighScore(int PlayerScore)
+        {
+            Console.WriteLine("Your Name");
+            string playerName = Console.ReadLine();
+            NORTHWNDEntities db = new NORTHWNDEntities();
+
+            //create a new highscore
+            HighScore newHighScore = new HighScore();
+            newHighScore.Date = DateTime.Now;
+            newHighScore.Game = "Trivia";
+            newHighScore.Name = playerName;
+            newHighScore.Score = PlayerScore;
+
+            //add it to the data base
+
+            db.HighScores.Add(newHighScore);
+
+            //save changes 
+            db.SaveChanges();
+            
+
+        }
+
+
+
+        static void DisplayHighScore()
+        {
+            Console.WriteLine("Display Trivia High Score");
+            Console.WriteLine("--------------");
+
+            NORTHWNDEntities db = new NORTHWNDEntities();
+            List<HighScore> highScoreList = db.HighScores.Where(x => x.Game == "Trivia")
+                .OrderByDescending(x => x.Score).Take(10).ToList();
+
+            foreach(HighScore highScore in highScoreList)
+            {
+                Console.WriteLine("{0}. {1}- {2} on {3}",
+                highScoreList.IndexOf(highScore) + 1,
+                highScore.Name,
+                highScore.Score,
+                highScore.Date.Value.ToShortDateString());
+
+            }
+        }
     }
 }
+
+        
+
 
      
